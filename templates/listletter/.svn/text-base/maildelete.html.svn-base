@@ -1,0 +1,27 @@
+{% extends "listletter/base.html" %}
+{% block title %}Delete email{% endblock %}
+
+
+{% block section_title %}
+Delete email
+{% endblock %}
+
+{% block content %}
+{% ifequal email_deleted 'False' %}
+{% ifnotequal error 'True' %} 
+<div class="error">Are you sure</div>
+<p>Are you sure you want to delete email {{ email.getSubject }} from
+{{ email.getDate }}?
+
+<form action="" method="post">
+<div>
+<input type="hidden" name="post" value="yes"/>
+<input type="submit" value="Yes, I'm sure" />
+</div>
+{% else %}
+<div class="error">{{ message }}</div>
+{% endifnotequal %}
+{% else %}
+<div class="success">Email {{ email_name }} deleted.</div>
+{% endifequal %}
+{% endblock %}

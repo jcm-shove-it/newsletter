@@ -1,0 +1,52 @@
+{% extends "listletter/base.html" %}
+{% block title %}List of emails in inbox{% endblock %}
+
+{% block section_title %}
+{% ifnotequal action 'delete' %}
+Selectable mails
+{% else %}
+Delete mails
+{% endifnotequal %}
+{% endblock %}
+
+{% block sidebar_content %}
+<ul class="object-tools">
+<li>
+<a href="/listletter/deletemailindex/" class="viewsitelink">Delete mails</a>
+</li>
+	<div class="clearer">&nbsp;</div><br>
+<li>
+<a href="/listletter/mailindex/" class="viewsitelink">Select mails</a>
+</li>
+	<div class="clearer">&nbsp;</div><br>
+<li>
+<a href="/listletter/sentmailhistory/" class="historylink">History</a>
+</li>
+
+</ul>
+<br>
+{% endblock %}
+
+{% block content %}
+
+{% if all_emails %}
+    <table onMouseOut="javascript:highlightTableRowVersionA(0);" cellspacing="0" summary="List of available mails">
+	   <tr>
+	     <th scope="col" abbr="Subject">Subject</th>
+  	     <th scope="col" abbr="Sender">Sender</th>
+ 	     <th scope="col" abbr="Date">Date</th>
+	   </tr>
+	   {% for email in all_emails %}
+	   <tr {% cycle 'class="even"' '' %}id="{{ email.uid }}" onMouseOver="javascript:highlightTableRowVersionA(this, '#8888FF');" onClick="javascript:gotoCombinedUrl(this, {% ifnotequal action 'delete' %}'/listletter/send/'{% else %} '/listletter/deletemailindex/'{% endifnotequal %});">
+	     <td>{{ email.getSubject }}</td>
+	     <td>{{ email.getSender }}</td>
+	     <td>{{ email.getDate }}</td>
+	   </tr>
+	   {% endfor %}
+    </table>	   
+{% else %}
+    <p>No emails are available.</p>
+{% endif %}
+
+{% endblock %}
+

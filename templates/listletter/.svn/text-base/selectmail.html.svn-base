@@ -1,0 +1,24 @@
+{% extends "listletter/base.html" %}
+{% block title %}Choose mail to be sent{% endblock %}
+
+{% block content %}
+{% for field in form.hidden_fields %}
+    {{ field.errors }}
+    {{ field }}
+{% endfor %}
+<form action="/listletter/approve/" method="post">
+{% if all_emails %}
+
+    {% for email in all_emails %}
+       <input type="radio" name="choice_email" id="email{{ email.uid }}"
+       	      value="{{ email.uid }}" />
+       <label for="email{{ email.uid }}">{{ email.getSubject }}</label><br/>
+
+    {% endfor %}
+<input type="submit" value="Sent" />
+</form>
+{% else %}
+    <p>No emails are available.</p>
+{% endif %}
+{% endblock %}
+

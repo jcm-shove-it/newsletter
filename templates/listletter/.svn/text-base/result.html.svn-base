@@ -1,0 +1,18 @@
+{% extends "listletter/base.html" %}
+{% block title %}List receivers email transmission protokol{% endblock %}
+
+{% block content %}
+<div class="success">The following email has been sent 
+with {{ err_cnt }} errors(s) to the following
+recipient groups:</p>
+
+<p><b>Subject</b><br> {{ email_subject }}</p>
+<p><b>Date</b><br> {{ email_date }}</p>
+<p><b>Groups</b>
+    <ul>
+	{% for group in selected_groups %}
+        <li>{{ group.name }}</li>		
+	{% endfor %}
+    </ul>
+</p>
+{% endblock %}

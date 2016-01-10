@@ -1,0 +1,102 @@
+{% extends "listletter/base.html" %}
+{% block title %}{% endblock %}
+
+{% block section_title %}
+{% ifequal group.id None %}
+Add group
+{% else %}
+Change group
+{% endifequal %}
+{% endblock %}
+
+
+{% block content %}
+
+
+<form enctype="multipart/form-data" action="" method="post"
+id="emailtargetgroup_form">
+
+<table>
+<div>
+<input type="hidden" id="id" name="id" value="{{ group.id }}"/>
+  <fieldset class="module aligned ">
+  
+          
+	  <tr>
+		<td>
+              <label for="id_name" class="required">Group
+              name:</label>
+	      </td>
+	      <td>
+	      <input name="name" value="{{ group.name }}"
+              class="text" maxlength="30" type="text"
+              id="id_name" />
+	      </td>
+	 </tr>
+	 <tr>
+		<td>
+          
+              <label for="id_description">Group
+              description:</label>
+	      </td>
+
+	      <td>
+	      <input name="description"
+              value="{{ group.description }}" class="text" maxlength="1024"
+              type="text" id="id_description" />
+	      </td>
+	 </tr>
+	 
+          
+  
+</fieldset>
+</table>
+
+<input type="submit" value="Save" name="_save" />
+<input type="submit" value="Save and goto groups"
+name="_save_goto_groups" />
+{% ifnotequal group.id None %}
+<a href="delete/">Delete</a>
+{% endifnotequal %}
+
+
+{% ifnotequal group.id None %}
+{% if group.emailtarget_set.all %}
+<a href=# onclick="showhide('group_contacts');">Show/hide contacts</a>
+<div id="group_contacts">
+<table onMouseOut="javascript:highlightTableRowVersionA(0);"
+cellspacing="0" summary="List of users in group {{ group.name }}">
+	   <tr>
+	     <th scope="col" abbr="Name">Name</th>
+  	     <th scope="col" abbr="Address">Address</th>
+ 	     <th scope="col" abbr="Groups">Groups</th>
+	   </tr>
+	   {% for email in group.emailtarget_set.all %}
+	   <tr {% cycle 'class="even"' '' %} id="{{ email.id }}" onMouseOver="javascript:highlightTableRowVersionA(this,
+   '#8888FF');" onClick="javascript:gotoCombinedUrl(this, '/listletter/addressindex/');">
+	     <td>{{ email.name }}</td>
+	     <td>{{ email.address }}</td>
+	     <td>
+		{% for group in email.groups.all %}
+		   {{ group.name }}&nbsp;
+		{% endfor %}
+	     </td>
+
+</tr>
+{% endfor %}
+</table>
+</div>
+{% endif %}
+{% endifnotequal %}
+
+<script type="text/javascript">
+window.onload = function()
+{
+showhide('group_contacts');
+}
+</script>
+
+</div>
+</form>
+
+{% endblock %}

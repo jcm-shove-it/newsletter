@@ -1,0 +1,101 @@
+{% extends "listletter/base.html" %}
+{% block title %}Change address{% endblock %}
+
+{% block section_title %}
+{% ifequal email.id None %}
+Add address
+{% else %}
+Change address
+{% endifequal %}
+{% endblock %}
+
+{% block content %}
+
+<br>
+<form enctype="multipart/form-data" action="" method="post"
+id="emailtarget_form">
+  
+  <table>
+<div>
+<input type="hidden" id="id" name="id" value="{{ email.id }}"/>
+  <fieldset>
+	<tr>
+	<div>
+	<td>
+	<label for="id_name">Name:</label>
+	</td>
+	<td>
+	<input name="name" value="{{ email.name }}" 
+	       maxlength="128" type="text" id="id_name"
+	       class="text"/>
+	</td>
+	</div>       
+	</tr>
+
+	<tr>
+	<div>
+	<td>
+	<label for="id_address">Email
+	address:</label>
+	</td>
+	<td>
+	<input name="address" value="{{ email.address }}" 
+	       maxlength="320" type="text" 
+	       id="id_address" class="text"/>
+	</td>
+        </div>
+  	<tr>
+
+  	 <div>
+		<td>
+              <label for="id_groups">Groups:</label>
+	      <div class="smaller">
+	      Hold down "Control", or "Command" on MacOs,
+              to select more than one.
+	      </div>
+	      </td>
+	      <td>
+	      <select multiple="multiple" name="groups" id="id_groups">
+	      {% spaceless %}
+	      {% for group in groups %}
+	      	 <option value="{{ group.id }}"
+                 {% ifnotequal email.id None %}
+		 {% for emailgroup in email.groups.all %}
+		    {% ifequal emailgroup.id group.id %}
+		    selected="selected"
+		    {% endifequal %}
+		 {% endfor %}
+		 {% endifnotequal %}
+		 >
+		 {{ group.name }}
+		 </option>
+		     
+	      {% endfor %}
+	      {% endspaceless %} 
+	      </select>
+	      </td>
+	      </tr>
+
+      </div>
+    </table>
+
+</fieldset>
+
+
+<input type="submit" value="Save" name="_save" />
+<input type="submit" value="Save and goto contacts" name="_save_goto_contacts" />
+{% ifnotequal email.id None %}
+<a href="delete/">Delete</a>
+{% endifnotequal %}
+
+<script type="text/javascript">
+
+</script>
+
+
+</div>
+
+</form>
+
+
+{% endblock %}

@@ -1,0 +1,22 @@
+{% extends "listletter/base.html" %}
+{% block title %}Delete contact{% endblock %}
+
+{% block section_title %}
+Delete contact
+{% endblock %}
+
+{% block content %}
+{% ifequal email_deleted 'False' %}
+<div class="error">Are you sure</div>
+<p>Are you sure you want to delete contact {{ email.name }} with
+address {{ email.address }}?
+
+<form action="" method="post">{% csrf_token %}
+<div>
+<input type="hidden" name="post" value="yes"/>
+<input type="submit" value="Yes, I'm sure" />
+</div>
+{% else %}
+<div class="success">Contact {{ email_name }} deleted.</div>
+{% endifequal %}
+{% endblock %}

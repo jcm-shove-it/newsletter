@@ -1,0 +1,54 @@
+{% extends "listletter/base.html" %}
+{% block title %}Address Book{% endblock %}
+
+{% block section_title %}
+List of contacts
+{% endblock %}
+
+{% block sidebar_content %}
+<ul class="object-tools">
+<li>
+<a href="/listletter/addressindex/0/" class="addlink">Add contact</a>
+</li>
+		<div class="clearer">&nbsp;</div><br>
+<li>
+<a href="/listletter/groupindex/0/" class="addlink">Add group</a>
+</li>
+		<div class="clearer">&nbsp;</div><br>
+<li>
+<a href="/listletter/contactupload/" class="changelink">Upload contacts</a>
+</li>
+		<div class="clearer">&nbsp;</div><br>
+<li>
+<a href="/listletter/groupindex/" class="changelink">Groups</a>
+</li>
+</ul>
+<br>
+{% endblock %}
+
+{% block content %}
+
+{% if email_target_list %}
+    <table onMouseOut="javascript:highlightTableRowVersionA(0);" cellspacing="0" summary="List of available mails">
+	   <tr>
+	     <th scope="col" abbr="Name">Name</th>
+  	     <th scope="col" abbr="Address">Address</th>
+ 	     <th scope="col" abbr="Groups">Groups</th>
+	   </tr>
+	   {% for email in email_target_list %}
+	   <tr {% cycle 'class="even"' '' %} id="{{ email.id }}" onMouseOver="javascript:highlightTableRowVersionA(this,
+   '#8888FF');" onClick="javascript:gotoCombinedUrl(this, '/listletter/addressindex/');">
+	     <td>{{ email.name }}</td>
+	     <td>{{ email.address }}</td>
+	     <td>
+		{% for group in email.groups.all %}
+		   {{ group.name }}&nbsp;
+		{% endfor %}
+	     </td>
+	   </tr>
+	   {% endfor %}
+    </table>	   
+{% else %}
+    <p>No contacts are available.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,137 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+	"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+    <meta http-equiv="content-type" content="text/html; charset=utf-8" />
+    <meta name="description" content=""/>
+    <meta name="keywords" content="" />
+    <meta name="author" content="Joerg Maier" />
+
+    <link rel="stylesheet" type="text/css" href="/listletter/site_media/css/style.css" />
+
+    <title>{% block title %}Email Listletter Tool{% endblock %}</title>
+
+    <script language="JavaScript" type="text/javascript" src="/listletter/site_media/js/tableH.js"></script>
+
+</head>
+
+<body>
+
+<div id="site-wrapper">
+
+        <div id="header">
+
+                <div id="top">
+                        <div class="left" id="logo">
+                                <a href="/listletter"><img src="/listletter/site_media/images/general/logo_ll.gif" alt="" /></a>
+                        </div>
+
+                        <div class="left navigation" id="main-nav">
+
+                                <ul class="tabbed">
+				        <!-- add class="current-tab" to the li item-->
+				        <li {% if isHome %}class="current-tab"{% endif %}><a
+				        href="/listletter">home</a></li>
+					<li {% if isContacts %}class="current-tab"{% endif %}><a href="/listletter/addressindex/">contacts</a></li>
+					<li {% if isMails %}class="current-tab"{% endif %}><a href="/listletter/mailindex/">mails</a></li>
+                                </ul>
+
+                                <div class="clearer">&nbsp;</div>
+
+                        </div>
+
+			<div class="clearer">&nbsp;</div>
+		</div>
+		<div class="clearer">&nbsp;</div>
+
+	</div>
+
+	<div class="main" id="main-two-columns">
+
+		<div class="left" id="main-content">
+
+			<div class="section">
+			<br>  
+			<h2 class="label label-orange">
+{% block section_title %}
+We are one
+{% endblock %}
+                        </h2><br><br>
+				<div class="section-content">
+{% block content%}				
+<p>
+From the days when house was built we have been here.
+
+To the frontiers of the music world we came.
+
+Pushing back the boundaries we have sought to make you dance, we are
+your servants which we ever will remain.
+
+We are the soldiers of the underground, protectors of the﻿ faith.
+
+That's why it is one that never can be tamed.
+
+We do not seek your adoration, your respect is all we seek.
+
+For that respect will help the movement to sustain.
+</p>
+<p>
+And though our names and faces change in time, our music will endure.
+
+And a simple task shall always be the same.
+
+That until the world has ended, 'til the walls come crashing down.
+
+The﻿ underground religion we will maintain.
+</p>
+<p>
+&copy DJ Q We are one
+</p>
+{% endblock %}				
+				</div>
+				<div class="clearer">&nbsp;</div>
+			</div>
+			<div class="clearer">&nbsp;</div>
+		</div>
+		{% if sidebar %}
+		<div class="right sidebar" id="sidebar">
+			<div class="section">
+
+				<div class="section-content">
+				{% block sidebar_content %}{% endblock %}
+				</div>
+			</div>
+		</div>
+		{% endif %}
+		<div class="clearer">&nbsp;</div>
+
+	</div>
+
+
+	<div id="footer">
+
+		<div class="left" id="footer-left">
+			
+			<img src="img/logo-small.gif" alt="" class="left" />
+			
+			<p>&copy; 2011 <a href="http://www.shove-it.de">shove-it</a>. All rights Reserved</p>
+
+			<p class="quiet"><a href="http://templates.arcsin.se/">Website template</a> by <a href="http://arcsin.se/">Arcsin</a></p>
+			
+			<div class="clearer">&nbsp;</div>
+
+		</div>
+
+		<div class="right" id="footer-right">
+
+		</div>
+
+		<div class="clearer">&nbsp;</div>
+
+	</div>
+
+</div>	
+
+
+</body>
+</html>

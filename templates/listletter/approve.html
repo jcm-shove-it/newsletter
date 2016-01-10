@@ -1,0 +1,104 @@
+{% extends "listletter/base.html" %}
+{% block title %}Check send decision{% endblock %}
+
+{% block section_title %}
+Send mail
+{% endblock %}
+
+{% block content %}
+
+{% ifequal action 'approve' %}
+<div class="notice">You have selected the following mail to be sent to the list:</div>
+
+<table>
+<tr>
+<td>
+Subject
+</td>
+<td>
+ <b>{{ email.getSubject }}</b>
+<td>
+
+<tr>
+<td>
+Date
+</td>
+<td>
+<b>{{ email.getDate }}</b>
+<td>
+</tr>
+</table>
+
+<div class="notice">Select group</div>
+
+<form enctype="multipart/form-data" action="" method="post"
+id="approve_send_form">{% csrf_token %}
+<div>
+<input type="hidden" id="id" name="id" value="{{ email.uid }}"/>
+  <fieldset class="module aligned ">
+      <div class="form-row groups  ">
+      
+      <div>
+	<table>
+	<tr>
+	<td>
+              <label for="id_groups">Groups:</label>
+	      <div class="smaller"> Hold down "Control", or "Command" 
+	      	 on MacOs, to select more than one.</div>
+	</td>
+	<td>
+	<select multiple="multiple" name="groups" id="id_groups">
+	      {% spaceless %}
+	      {% for group in available_groups %}
+	      	 <option value="{{ group.id }}">
+		 {{ group.name }}
+		 </option>
+	      {% endfor %}
+	      {% endspaceless %} 
+	 </select>
+	 </td>
+	 </tr>
+	 </table>
+      </div>
+
+      </div>
+  
+</fieldset>
+
+
+<div class="submit-row" >
+<input type="submit" value="Send" class="default" name="_send" />
+</div>
+
+<script type="text/javascript">
+
+</script>
+
+
+</div>
+
+</form>
+{% else %}
+<div class="success">The mail has been sent successfully to {{ suc_cnt }} recipients. 
+</div>
+{% ifnotequal err_cnt 0 %}
+<div class="error">The delivery has failed for {{ err_cnt }} addresss.</div>
+{% endifnotequal %}
+
+<div class="notice">The delivery process took {{ seconds_elapsed }} seconds.</div>
+{% endifequal %}
+<!--
+<p>You have selected the following mail to be sent to the list:</p>
+<p>Subject {{ email.getSubject }}.</p>
+<p>Date {{ email.getDate }}</p>
+<form action="/listletter/sendmail/" method="post">
+{% for group in available_groups %}
+   <input type="checkbox" name="{{ group.name }}"/>
+   {{ group.name }}<br>
+{% endfor %}
+<input type="hidden" name="uid" value="{{ email.uid }}">
+<input type="submit" value="Sent" />
+</form>
+-->
+
+{% endblock %}

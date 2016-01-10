@@ -1,0 +1,82 @@
+{% extends "listletter/base.html" %}
+{% block title %}Serial letter history{% endblock %}
+
+{% block section_title %}
+Serial letter history
+{% endblock %}
+
+{% block content %}
+
+{% if listletter_actions %}
+    <table onMouseOut="javascript:highlightTableRowVersionA(0);"
+    cellspacing="0" summary="listletter action history">
+	   <tr>
+	     <th scope="col" abbr="Date">Date</th>
+  	     <th scope="col" abbr="Sender">Sender</th>
+	   </tr>
+	   {% for listletter_action in listletter_actions %}
+	   <tr {% cycle 'class="even"' '' %} id="listletter_action_row_{{ listletter_action.id }}" onMouseOver="javascript:highlightTableRowVersionA(this, '#8888FF');" onClick="javascript:showhide('listletter_action_tab_{{ listletter_action.id }}');">
+	     <td>{{ listletter_action.date_start }}</td>
+	     <td>{{ listletter_action.sender_address }}</td>
+	   </tr>
+	   <tr>
+	   <td colspan=2>
+	   <div id="listletter_action_tab_{{ listletter_action.id }}">
+	   {% if listletter_action.sendaction_set.all or listletter_action.senderror_set.all %}
+	   <table cellspacing="0" summary="listletter_action_suc_tab_{{ listletter_action.id }}">
+	        <tr>
+		  <th>
+		    recipient
+		  </th>
+		  <th>
+		    status
+		  </th>
+		</tr>
+	     {% for sendaction in listletter_action.sendaction_set.all %}
+	     	<tr>
+		<td>
+		  {{ sendaction.recipient }}
+		</td>
+		<td>
+		<div class="success">
+		  ok
+		</div>
+		</td>
+		</tr>
+	     {% endfor %}
+	     {% for senderror in listletter_action.senderror_set.all %}
+	     	<tr>
+		<td>
+		  {{ senderror.recipient }}
+		</td>
+		<td>
+		   <div class="error">
+		  {{ senderror.error_str }}
+		  </div>
+		</td>
+		</tr>
+	     {% endfor %}
+	   </table>
+	   {% endif %}   
+
+	   </div>
+	   {% endfor %}
+	   </td>
+	   </tr>
+    </table>	   
+
+
+<script type="text/javascript">
+window.onload = function()
+{
+{% for listletter_action in listletter_actions %}
+showhide('listletter_action_tab_{{ listletter_action.id }}');
+{% endfor %}
+}
+</script>
+
+{% else %}
+    <p>No history</p>
+{% endif %}
+
+{% endblock %}

@@ -1,0 +1,59 @@
+{% extends "listletter/base.html" %}
+{% block title %}Check send decision{% endblock %}
+
+{% block section_title %}
+Upload contact file
+{% endblock %}
+
+{% block content %}
+{% ifequal action 'done' %}
+<div class="notice" onclick="showhide('failed_contacts');">{{ message }}</div>
+{% else %}
+<div class="error">Warning: All old contacts and contact groups are deleted before processing the file.</div>
+<p>MacOs vcf data only supported at the moment.</p>
+{% endifequal %}
+
+{% ifequal action 'upload' %}
+
+<form enctype="multipart/form-data" action="" method="post"
+id="contactupload">
+<div>
+
+{{ form }}
+
+<script type="text/javascript">
+
+</script>
+<br><br>
+<div class="submit-row">
+<input type="submit" value="Upload" class="default" name="_upload" />
+</div>
+</div>
+</form>
+
+{% endifequal %}
+
+{% ifequal action 'done' %}
+{% ifnotequal numfailed 0 %}
+<div id="failed_contacts">
+{% if failed %}
+{% for msg in failed %}
+Contact:<br>
+{% for line in msg.splitlines %}
+{{ line }}<br>
+{% endfor %}
+<br>
+{% endfor %}
+{% endif %}
+</div>
+
+<script type="text/javascript">
+window.onload = function()
+{
+showhide('failed_contacts');
+}
+</script>
+{% endifnotequal %}
+{% endifequal %}
+
+{% endblock %}

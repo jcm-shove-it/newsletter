@@ -1,0 +1,36 @@
+{% extends "listletter/base.html" %}
+{% block title %}Address Book{% endblock %}
+
+{% block section_title %}
+List of contacts
+{% endblock %}
+
+{% block sidebar_content %}
+<ul class="object-tools">
+<li>
+<a href="/listletter/groupindex/0/" class="addlink">Add group</a>
+</li>
+</ul>
+<br>
+{% endblock %}
+
+{% block content %}
+
+{% if all_groups %}
+    <table onMouseOut="javascript:highlightTableRowVersionA(0);" class="tab1" cellspacing="0" summary="List of available mails">
+	   <tr>
+	     <th scope="col" abbr="Name">Name</th>
+  	     <th scope="col" abbr="Description">Description</th>
+	   </tr>
+	   {% for group in all_groups %}
+	   <tr {% cycle 'class="even"' '' %} id="{{ group.id }}" onMouseOver="javascript:highlightTableRowVersionA(this,
+   '#8888FF');" onClick="javascript:gotoCombinedUrl(this, '/listletter/groupindex/');">
+	     <td>{{ group.name }}</td>
+	     <td>{{ group.description }}</td>
+	   </tr>
+	   {% endfor %}
+    </table>	   
+{% else %}
+    <p>No groups are available.</p>
+{% endif %}
+{% endblock %}
