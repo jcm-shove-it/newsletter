@@ -72,6 +72,7 @@ def addressdetail(request, contact_id):
                     mode = 'create__goto_contacts'
             except Exception as e:
                 mode = 'create'
+            emailTargetId = 0
         else:
             try:
                 if request.POST['_save_goto_contacts'] != None:
@@ -102,6 +103,7 @@ def addressdetail(request, contact_id):
             email = EmailTarget.objects.get(id=emailTargetId)
         email.name = request.POST['name']
         email.address = request.POST['address']
+        email.user = ListletterSender.objects.filter(user__username=request.user.username)[0]
         email.save()
 
         liste = request.POST.getlist('groups')
@@ -127,25 +129,26 @@ def addressdetail(request, contact_id):
 def groupdetail(request, group_id):
     mode = 'initial'
     group = None
-    emailTargetGrouId = None
+    emailTargetGroupId = None
 
     #############
     # find mode #
     #############
     try:
-        emailTargetGrouId = request.POST['id']
+        emailTargetGroupId = request.POST['id']
     except Exception as e:
         # no post data
         mode = 'display'
-        emailTargetGrouId = group_id
+        emailTargetGroupId = group_id
 
     if mode != 'display':
-        if emailTargetGrouId == 'None':
+        if emailTargetGroupId == 'None':
             try:
                 if request.POST['_save_goto_groups'] != None:
                     mode = 'create_goto_groups'
             except Exception as e:
                 mode = 'create'
+            emailTargetGroupId = 0
         else:
             try:
                 if request.POST['_save_goto_groups'] != None:
@@ -157,8 +160,8 @@ def groupdetail(request, group_id):
     #######################################
     # check if user is allowed to display #
     #######################################
-    if int(emailTargetGrouId) != 0:
-        if EmailTargetGroup.objects.get(id=emailTargetGrouId).user.user.username != request.user.username:
+    if int(emailTargetGroupId) != 0:
+        if EmailTargetGroup.objects.get(id=emailTargetGroupId).user.user.username != request.user.username:
             raise PermissionDenied
 
     ###################
@@ -166,16 +169,17 @@ def groupdetail(request, group_id):
     ###################
     if mode == 'display':
         try:
-            group = EmailTargetGroup.objects.get(id=emailTargetGrouId)
+            group = EmailTargetGroup.objects.get(id=emailTargetGroupId)
         except EmailTargetGroup.DoesNotExist as e:
             group = EmailTargetGroup()
     elif mode.startswith('create') or mode.startswith('change'):
         if mode.startswith('create'):
             group = EmailTargetGroup()
         elif mode.startswith('change'):
-            group = EmailTargetGroup.objects.get(id=emailTargetGrouId)
+            group = EmailTargetGroup.objects.get(id=emailTargetGroupId)
         group.name = request.POST['name']
         group.description = request.POST['description']
+        group.user = ListletterSender.objects.filter(user__username=request.user.username)[0]
         group.save()
 
     if mode.endswith('goto_groups'):
