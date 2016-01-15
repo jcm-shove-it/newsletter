@@ -1,16 +1,22 @@
 {% extends "listletter/base.html" %}
-{% block title %}Change address{% endblock %}
+
+{% block title %}
+   {% if email.id == None %}
+      Create address
+   {% else %}
+      Change address
+   {% endif %}
+{% endblock %}
 
 {% block section_title %}
-{% ifequal email.id None %}
-Add address
-{% else %}
-Change address
-{% endifequal %}
+   {% if email.id == None %}
+      Add address
+   {% else %}
+      Change address
+   {% endif %}
 {% endblock %}
 
 {% block content %}
-
 <br>
 <form enctype="multipart/form-data" action="" method="post"
 id="emailtarget_form">{% csrf_token %}
@@ -57,20 +63,20 @@ id="emailtarget_form">{% csrf_token %}
 	      <td>
 	      <select multiple="multiple" name="groups" id="id_groups">
 	      {% spaceless %}
-	      {% for group in groups %}
-	      	 <option value="{{ group.id }}"
-                 {% ifnotequal email.id None %}
-		 {% for emailgroup in email.groups.all %}
-		    {% ifequal emailgroup.id group.id %}
-		    selected="selected"
-		    {% endifequal %}
+		 {% for group in groups %}
+		    <option value="{{ group.id }}"
+		    {% if email.id != None %}
+		       {% for emailgroup in email.groups.all %}
+			  {% if emailgroup.id == group.id %}
+			     selected="selected"
+			  {% endif %}
+		       {% endfor %}
+		    {% endif %}
+		    >
+		    {{ group.name }}
+		    </option>
+
 		 {% endfor %}
-		 {% endifnotequal %}
-		 >
-		 {{ group.name }}
-		 </option>
-		     
-	      {% endfor %}
 	      {% endspaceless %} 
 	      </select>
 	      </td>
@@ -84,9 +90,9 @@ id="emailtarget_form">{% csrf_token %}
 
 <input type="submit" value="Save" name="_save" />
 <input type="submit" value="Save and goto contacts" name="_save_goto_contacts" />
-{% ifnotequal email.id None %}
+{% if email.id == None %}
 <a href="delete/">Delete</a>
-{% endifnotequal %}
+{% endif %}
 
 <script type="text/javascript">
 

@@ -1,18 +1,21 @@
 {% extends "listletter/base.html" %}
-{% block title %}{% endblock %}
-
-{% block section_title %}
-{% ifequal group.id None %}
-Add group
-{% else %}
-Change group
-{% endifequal %}
+{% block title %}
+   {% if group.id == None %}
+      Create group
+   {% else %}
+      Change group
+   {% endif %}
 {% endblock %}
 
+{% block section_title %}
+   {% if group.id == None %}
+      Add group
+   {% else %}
+      Change group
+   {% endif %}
+{% endblock %}
 
 {% block content %}
-
-
 <form enctype="multipart/form-data" action="" method="post"
 id="emailtargetgroup_form">{% csrf_token %}
 
@@ -21,8 +24,7 @@ id="emailtargetgroup_form">{% csrf_token %}
 <input type="hidden" id="id" name="id" value="{{ group.id }}"/>
   <fieldset class="module aligned ">
   
-          
-	  <tr>
+      	<tr>
 		<td>
               <label for="id_name" class="required">Group
               name:</label>
@@ -55,12 +57,12 @@ id="emailtargetgroup_form">{% csrf_token %}
 <input type="submit" value="Save" name="_save" />
 <input type="submit" value="Save and goto groups"
 name="_save_goto_groups" />
-{% ifnotequal group.id None %}
+{% if group.id != None %}
 <a href="delete/">Delete</a>
-{% endifnotequal %}
+{% endif %}
 
 
-{% ifnotequal group.id None %}
+{% if group.id != None %}
 {% if group.emailtarget_set.all %}
 <a href=# onclick="showhide('group_contacts');">Show/hide contacts</a>
 <div id="group_contacts">
@@ -87,7 +89,7 @@ cellspacing="0" summary="List of users in group {{ group.name }}">
 </table>
 </div>
 {% endif %}
-{% endifnotequal %}
+{% endif %}
 
 <script type="text/javascript">
 window.onload = function()
