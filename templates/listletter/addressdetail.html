@@ -90,7 +90,7 @@ id="emailtarget_form">{% csrf_token %}
 
 <input type="submit" value="Save" name="_save" />
 <input type="submit" value="Save and goto contacts" name="_save_goto_contacts" />
-{% if email.id == None %}
+{% if email.id != None %}
 <a href="delete/">Delete</a>
 {% endif %}
 

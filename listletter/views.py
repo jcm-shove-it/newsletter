@@ -5,7 +5,7 @@ from django.http import HttpResponse
 from django.contrib.auth.decorators import permission_required, login_required
 from django.template import RequestContext, Context, loader
 from django.http import HttpResponse, HttpResponseRedirect
-from django.shortcuts import render_to_response
+from django.shortcuts import render_to_response, redirect
 from django.core.exceptions import PermissionDenied
 
 
@@ -13,40 +13,43 @@ from listletter.models import EmailTarget
 from listletter.models import EmailTargetGroup
 from listletter.models import ListletterSender
 
+def main(request):
+    return redirect('/listletter', permanent=True)
 
 def index(request):
-    a=[]
-    isHome=True
-    for i in range(1000):
-        a.append(i)
-    t = loader.get_template('listletter/index.html')
-    c = Context({'cnt':a, 'isHome':isHome})
-    return HttpResponse(t.render(c))
-
+    return render_to_response(
+        'listletter/index.html', 
+        { 
+            'isHome':True
+        }
+    )
+        
 @permission_required('listletter.can_send')
 def addressindex(request):
 
-    isContacts=True
     userName=request.user.username
-
     email_target_list = EmailTarget.objects.filter(user__user__username=userName)
-    t = loader.get_template('listletter/addressindex.html')
-    c = Context(
+
+    return render_to_response(
+        'listletter/addressindex.html',
         {
             'email_target_list': email_target_list,
-            'isContacts':isContacts,
-            'sidebar':True,
+            'isContacts':True,
+            'sidebar':True
         }
-        )
-    return HttpResponse(t.render(c))
-
+    )
+        
 @permission_required('listletter.can_send')
 def groupindex(request):
     all_groups = EmailTargetGroup.objects.filter(user__user__username=request.user.username)
-    return render_to_response('listletter/groupindex.html', {
-        'all_groups': all_groups,
-        'sidebar':True,
-    })
+    return render_to_response(
+        'listletter/groupindex.html', 
+        {
+            'all_groups': all_groups,
+            'isContacts':True,
+            'sidebar':True,
+        }
+    )
     
 @permission_required('listletter.can_send')
 def addressdetail(request, contact_id):
@@ -116,13 +119,15 @@ def addressdetail(request, contact_id):
     if mode.endswith('goto_contacts'):
         return render_to_response('listletter/addressindex.html', {
             'email_target_list': EmailTarget.objects.filter(user__user__username=request.user.username),
-            'sidebar':True,
+            'isContacts':True,
+             'sidebar':True,
             })
     else:
         return render_to_response('listletter/addressdetail.html', {
             'email': email,
             'groups': EmailTargetGroup.objects.filter(user__user__username=request.user.username),
-            'mode': mode
+            'isContacts':True,
+             'mode': mode
             })
 
 @permission_required('listletter.can_send')
@@ -185,10 +190,12 @@ def groupdetail(request, group_id):
     if mode.endswith('goto_groups'):
         return render_to_response('listletter/groupindex.html', {
             'all_groups': EmailTargetGroup.objects.filter(user__user__username=request.user.username),
-            'sidebar':True,
+            'isContacts':True,
+             'sidebar':True,
             })
     else:
         return render_to_response('listletter/addressgroupdetail.html', {
+            'isContacts':True,
             'group': group,
             })
 
@@ -210,7 +217,7 @@ def deleteaddress(request, contact_id):
                 'email':None,
                 'email_name':email.name,
                 'email_deleted': 'True',
-                'isContacts':isContacts
+                'isContacts':True
                 })
     except:
         pass
@@ -219,12 +226,11 @@ def deleteaddress(request, contact_id):
         'email': email,
         'email_name':email.name,
         'email_deleted': 'False',
-        'isContacts':isContacts,
+        'isContacts':True
         })
            
 @permission_required('listletter.can_send')
 def deletegroup(request, group_id):
-    isContacts=True
     group = EmailTargetGroup.objects.get(id=group_id)
     group_name = group.name
     
@@ -250,6 +256,6 @@ def deletegroup(request, group_id):
         'group': group,
         'group_name':group.name,
         'group_deleted': 'False',
-        'isContacts':isContacts
+        'isContacts':True
         })
 

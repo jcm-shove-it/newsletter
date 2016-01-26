@@ -6,7 +6,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    # url(r'^$', 'newsletter.views.home', name='home'),
+    url(r'^$', 'newsletter.listletter.views.main'),
     # url(r'^newsletter/', include('newsletter.foo.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
@@ -31,8 +31,8 @@ urlpatterns = patterns('',
     url(r'^listletter/addressindex/(?P<contact_id>\d+)/delete/', 'newsletter.listletter.views.deleteaddress'),
     #url(r'^listletter/send/(?P<email_id>\d+)/', 'newsletter.listletter.views.sendmail'),
     #url(r'^listletter/contactupload/', 'newsletter.listletter.views.upload_contacts'),
-    url(r'^listletter/deletemailindex/$$', 'newsletter.listletter.views.deletemailindex'),
-    url(r'^listletter/deletemailindex/(?P<email_id>\d+)/$', 'newsletter.listletter.views.deletemail'),
+    #url(r'^listletter/deletemailindex/$$', 'newsletter.listletter.views.deletemailindex'),
+    #url(r'^listletter/deletemailindex/(?P<email_id>\d+)/$', 'newsletter.listletter.views.deletemail'),
     #url(r'^listletter/sentmailhistory/$$', 'newsletter.listletter.views.sentmailhistory'),
     #only in development engine !
     #url(r'^listletter/site_media/(?P<path>.*)$', 'django.views.static.serve',
