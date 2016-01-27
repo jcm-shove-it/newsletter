@@ -16,6 +16,9 @@ from email.utils import parseaddr
 import time
 
 class ListletterSender(models.Model):
+    def __unicode__(self):
+        return self.user.username
+
     emailAddress = models.CharField('email address of sender for from entries', max_length=128)
     mailUsername = models.CharField('username on mail server for send actions', max_length=128)
     mailPassword = models.CharField('password on mail server for send actions', max_length=128)
@@ -23,8 +26,6 @@ class ListletterSender(models.Model):
         User,
         on_delete=models.PROTECT,
         )
-    def __unicode__(self):
-        return self.user.username
     def allowedForEmailTarget(self, emailTarget):
         if type(emailTarget) == EmailTarget:
             if not emailTarget.user == self:
@@ -64,7 +65,8 @@ class SendListletterAction(models.Model):
 
 class SendAction(models.Model):
     def __unicode__(self):
-        return self.sendlistletter.user + ' ' + str(self.date)
+        return str(self.sendlistletter.user) + ' ' + str(self.date)
+
     date      = models.DateTimeField('send date', default=datetime.now)
     recipient = models.CharField('email address', max_length=320)
     sendlistletter = models.ForeignKey(SendListletterAction)

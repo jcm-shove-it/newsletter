@@ -13,6 +13,17 @@ from listletter.models import EmailTarget
 from listletter.models import EmailTargetGroup
 from listletter.models import ListletterSender
 
+from listletter.imapaccess import InboxSupplier
+from settings_secret import mail_host
+
+from listletter.smtpaccess import SmtpSender
+
+from listletter.helperfunctions import Helper
+
+from email.parser import Parser
+
+import time
+
 def main(request):
     return redirect('/listletter', permanent=True)
 
@@ -27,7 +38,7 @@ def index(request):
 @permission_required('listletter.can_send')
 def addressindex(request):
 
-    userName=request.user.username
+    userName = request.user.username
     email_target_list = EmailTarget.objects.filter(user__user__username=userName)
 
     return render_to_response(
@@ -258,4 +269,75 @@ def deletegroup(request, group_id):
         'group_deleted': 'False',
         'isContacts':True
         })
+
+
+@permission_required('listletter.can_send')
+def mailindex(request):
+    listLetterSender = ListletterSender.objects.filter(user__username=request.user.username)[0]
+
+    sup = InboxSupplier()
+    sup.login(mail_host, listLetterSender.mailUsername, listLetterSender.mailPassword)
+
+    all_emails = sup.listMails()
+    sup.logout()
+    return render_to_response(
+        'listletter/mailindex.html',
+        {
+            'all_emails': all_emails,
+            'isMails':True,
+            'sidebar':True,
+        }
+        )
+            
+
+@permission_required('listletter.can_send')
+def sendmail(request, email_id):
+    userName = request.user.username
+    listLetterSender = ListletterSender.objects.filter(user__username=request.user.username)[0]
+
+    selected_email = email_id
+    selected_groups = None
+    available_groups = EmailTargetGroup.objects.filter(user__user__username=request.user.username)
+    email_target_list = EmailTarget.objects.filter(user__user__username=userName)
+    mode = ''
+    sup = InboxSupplier()
+    sup.login(mail_host, listLetterSender.mailUsername, listLetterSender.mailPassword)
+    m_email = sup.getEmail(int(email_id))
+
+    try:
+        was_send = request.POST['_send']
+        mode = 'send'
+    except:
+        mode = 'approve'
+
+    if mode == 'send':
+        mode = 'send'
+        sender  = SmtpSender()
+        sender.login(mail_host, listLetterSender.mailUsername, listLetterSender.mailPassword)
+        selected_groups = Helper.getGroups(request)
+        mime_mail = Parser().parsestr(m_email.body)
+        time1 = time.time()
+        lla = sender.sendMail(mime_mail, selected_groups, email_target_list, listLetterSender)
+        sender.logout()
+        time2 = time.time()
+        seconds_elapsed = (time2 - time1)
+        
+        return render_to_response('listletter/approve.html', {
+            'email':m_email,
+            'selected_groups':selected_groups,
+            'action':mode,
+            'err_cnt':len(lla.senderror_set.all()),
+            'suc_cnt':len(lla.sendaction_set.all()),
+            'seconds_elapsed':seconds_elapsed,
+            'listletteraction':lla,
+            'isMails':True,
+            })
+
+    else:
+        return render_to_response('listletter/approve.html', {
+            'email':m_email,
+            'available_groups':available_groups,
+            'action':mode,
+            'isMails':True,
+            })
 
