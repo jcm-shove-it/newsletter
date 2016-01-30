@@ -18,23 +18,16 @@ class Helper():
             group = EmailTargetGroup.objects.get(id=group_id)
             groups.append(group)
 
-#        groups = []
-#        for existing_group in EmailTargetGroup.objects.all():
-#            try:
-#                if str(request.POST[existing_group.name]) == 'on':
-#                    groups.append(existing_group)
-#            except Exception:
-#                pass
         return groups
 
     @classmethod
-    def importContacts(self, f):
+    def importContacts(self, f, llSender):
         mail_re = re.compile(r'^(item.*)?' + self.MAIL_INIT_STRING + r'(.*)$', re.MULTILINE)
         name_re = re.compile(r'^' + self.NAME_INIT_STRING + r'(.*)$', re.MULTILINE)
         group_re = re.compile(r'^' + self.GROUPS_INIT_STRING + r'(.*)$', re.MULTILINE)
                 
-        Helper.cleanContacts()
-        m_all = EmailTargetGroup.objects.get(name='all')
+        Helper.cleanContacts(llSender)
+        m_all = EmailTargetGroup.objects.get(name='all', user = llSender)
         imported = 0
         failed = []
         
@@ -54,11 +47,12 @@ class Helper():
                     tmp_name = ''
                 add_groups = []
                 if group_re.search(vcard) != None:
-                    groups_strs = group_re.search(vcard).group(1).replace(',', ' ').split()
+                    groups_strs = group_re.search(vcard).group(1).split(',')
                     for group_str in groups_strs:
-                        add_group, created = EmailTargetGroup.objects.get_or_create(name = group_str)
+                        group_str = group_str.strip()
+                        add_group, created = EmailTargetGroup.objects.get_or_create(name = group_str, user = llSender)
                         add_groups.append(add_group)
-                user = EmailTarget(name = tmp_name, address = emails[0])
+                user = EmailTarget(name = tmp_name, address = emails[0], user = llSender)
                 user.save()
                 user.groups.add(m_all)
                 if len(add_groups) > 0:
@@ -72,10 +66,10 @@ class Helper():
 
 
     @classmethod
-    def cleanContacts(self):
-        EmailTarget.objects.all().delete()
-        EmailTargetGroup.objects.all().delete()
-        m_all = EmailTargetGroup(name='all')
+    def cleanContacts(self, llSender):
+        EmailTarget.objects.filter(user=llSender).delete()
+        EmailTargetGroup.objects.filter(user=llSender).delete()
+        m_all = EmailTargetGroup(name='all', user=llSender)
         m_all.save()
         
         

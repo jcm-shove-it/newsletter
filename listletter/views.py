@@ -13,6 +13,9 @@ from listletter.models import EmailTarget
 from listletter.models import EmailTargetGroup
 from listletter.models import ListletterSender
 
+from listletter.models import SendListletterAction
+
+
 from listletter.imapaccess import InboxSupplier
 from settings_secret import mail_host
 
@@ -23,6 +26,8 @@ from listletter.helperfunctions import Helper
 from email.parser import Parser
 
 import time
+
+from listletter.forms import UploadFileForm
 
 def main(request):
     return redirect('/listletter', permanent=True)
@@ -37,8 +42,8 @@ def index(request):
         
 @permission_required('listletter.can_send')
 def addressindex(request):
-
     userName = request.user.username
+
     email_target_list = EmailTarget.objects.filter(user__user__username=userName)
 
     return render_to_response(
@@ -210,6 +215,7 @@ def groupdetail(request, group_id):
             'group': group,
             })
 
+
 @permission_required('listletter.can_send')
 def deleteaddress(request, contact_id):
     email = EmailTarget.objects.get(id=contact_id)
@@ -286,6 +292,7 @@ def mailindex(request):
             'all_emails': all_emails,
             'isMails':True,
             'sidebar':True,
+            'container_account':listLetterSender.mailUsername
         }
         )
             
@@ -341,3 +348,103 @@ def sendmail(request, email_id):
             'isMails':True,
             })
 
+
+@permission_required('listletter.can_send')
+def upload_contacts(request):
+    isContacts=True
+    message = ''
+    failed = []
+    imported = 0
+    llSender = ListletterSender.objects.filter(user__username=request.user.username)[0]
+    
+    if request.method == 'POST':
+        action = 'done'        
+        form = UploadFileForm(request.POST, request.FILES, llSender)
+        if form.is_valid():
+            imported, failed = Helper.importContacts(request.FILES['file'], llSender)
+            message = '%d contacts were imported successfully, the import of %d contacts failed.' % (imported, len(failed))
+        else:
+            message = 'not valid'
+    else:
+        action = 'upload'
+        form = UploadFileForm()
+        
+    return render_to_response('listletter/contact_upload.html', {
+        'form': form,
+        'action':action,
+        'message':message,
+        'failed':failed,
+        'numfailed':len(failed),
+        'isContacts':isContacts
+        })
+
+
+@permission_required('listletter.can_send')
+def deletemailindex(request):
+    listLetterSender = ListletterSender.objects.filter(user__username=request.user.username)[0]
+
+    sup = InboxSupplier()
+    sup.login(mail_host, listLetterSender.mailUsername, listLetterSender.mailPassword)
+    all_emails = sup.listMails()
+    t = loader.get_template('listletter/mailindex.html')
+    c = Context({
+        'all_emails': all_emails,
+        'isMails':True,
+        'sidebar':True,
+        'action': 'delete',
+        'container_account':listLetterSender.mailUsername
+    })
+    sup.logout()
+    return HttpResponse(t.render(c))
+
+
+@permission_required('listletter.can_send')
+def deletemail(request, email_id):
+    listLetterSender = ListletterSender.objects.filter(user__username=request.user.username)[0]
+
+    sup = InboxSupplier()
+    sup.login(mail_host, listLetterSender.mailUsername, listLetterSender.mailPassword)
+    m_email = sup.getEmail(int(email_id))
+    
+    try:
+        if request.POST['post'] == 'yes':
+            try:
+                sup.deleteMail(email_id)
+                sup.logout()
+            except Exception as ex:
+                message = u'Delete message %s from %s failed: ' % (m_email.getSubject(), m_email.getDate())
+                message += ex.__unicode__()
+                return render_to_response('listletter/maildelete.html', {
+                    'email':m_email,
+                    'email_name':m_email.getSubject(),
+                    'email_deleted': 'False',
+                    'isMails':True,
+                    'message': message,
+                    'error':'True'
+                    })
+            return render_to_response('listletter/maildelete.html', {
+                'email':m_email,
+                'email_name':m_email.getSubject(),
+                'email_deleted': 'True',
+                'isMails':True,
+                })
+    except Exception as e:
+        pass
+    
+    return render_to_response('listletter/maildelete.html', {
+        'email': m_email,
+        'email_name':m_email.getSubject(),
+        'email_deleted': 'False',
+        'isMails':True,
+        })
+
+@permission_required('listletter.can_send')
+def sentmailhistory(request):
+    userName = request.user.username
+
+    listletter_actions = SendListletterAction.objects.filter(user__user__username=userName)
+    return render_to_response('listletter/sentmailhistory.html', {
+        'isMails':True,
+        'listletter_actions':listletter_actions,
+        })
+    

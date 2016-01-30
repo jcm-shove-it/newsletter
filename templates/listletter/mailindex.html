@@ -29,6 +29,8 @@ Delete mails
 
 {% block content %}
 
+In postbox {{ container_account }}
+
 {% if all_emails %}
     <table onMouseOut="javascript:highlightTableRowVersionA(0);" cellspacing="0" summary="List of available mails">
 	   <tr>
@@ -45,7 +47,7 @@ Delete mails
 	   {% endfor %}
     </table>	   
 {% else %}
-    <p>No emails are available.</p>
+    <p>No emails are available in mailbox {{ container_account }}.</p>
 {% endif %}
 
 {% endblock %}
