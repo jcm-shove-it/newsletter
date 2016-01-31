@@ -22,6 +22,8 @@ class ListletterSender(models.Model):
     emailAddress = models.CharField('email address of sender for from entries', max_length=128)
     mailUsername = models.CharField('username on mail server for send actions', max_length=128)
     mailPassword = models.CharField('password on mail server for send actions', max_length=128)
+    firstName = models.CharField('first name for send actions', max_length=128)
+    lastName = models.CharField('first name for send actions', max_length=128)
     user = models.OneToOneField(
         User,
         on_delete=models.PROTECT,
@@ -60,6 +62,7 @@ class SendListletterAction(models.Model):
     date_start = models.DateTimeField('start sending the serial letter', null=True)
     date_end   = models.DateTimeField('end sending the serial letter', null=True)
     sender_address = models.CharField(max_length=320)
+    subject    = models.CharField(max_length=600)
     user       = models.ForeignKey(ListletterSender)
     status     = models.CharField(max_length=2, choices = STATI)
 

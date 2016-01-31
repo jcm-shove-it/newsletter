@@ -71,5 +71,20 @@ class Helper():
         EmailTargetGroup.objects.filter(user=llSender).delete()
         m_all = EmailTargetGroup(name='all', user=llSender)
         m_all.save()
-        
+
+    @classmethod
+    def getUsersOfGroups(self, groups, llSender):
+        selected_email_targets = []
+
+        available_email_targets = EmailTarget.objects.filter(user__user__username=llSender.user.username)
+        for available_email_target in available_email_targets:
+            send_mail = False
+            for group in groups:
+                for user_group in available_email_target.groups.all():
+                    if user_group.id == group.id:
+                        send_mail = True
+            if send_mail == True:
+                selected_email_targets.append(available_email_target)
+        return selected_email_targets
+
         

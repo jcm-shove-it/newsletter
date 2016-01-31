@@ -21,7 +21,7 @@ class SmtpSender:
         self.server = None
 
 
-    def sendMail(self, m_email, groups, email_target_list, llSender):
+    def sendMail(self, m_email, email_target_list, llSender):
 
         if self.server == None:
             raise PermissionDenied
@@ -29,19 +29,35 @@ class SmtpSender:
         # get SendListletterAction
         m_listletteraction = SendListletterAction()
         m_listletteraction.user = llSender
+        m_listletteraction.subject = m_email.get('')
 
-        # change Date header
+        # change Date header in mail
         m_key = 'Date'
         if m_email.get(m_key) != None:
             m_email.__delitem__(m_key)
         m_email.__setitem__(m_key, email.utils.formatdate())
 
-        # get mail sender
+        #change from in mail
+        m_key = 'From'
+        if m_email.get(m_key) != None:
+            m_email.__delitem__(m_key)
+        my_from = u'%s %s<%s>' % (llSender.firstName, llSender.lastName, llSender.emailAddress)
+        my_hdr = email.header.Header(my_from, 'iso-8859-1')
+        m_email.__setitem__(m_key, my_hdr)
+
+        # set mail sender in m_listletteraction
         sender = ''
         m_key = 'From'
         if m_email.get(m_key) != None:
             sender = m_email.get(m_key)
             m_listletteraction.sender_address = sender
+
+        # set mail seubject in m_listletteraction
+        subject = ''
+        m_key = 'Subject'
+        if m_email.get(m_key) != None:
+            subject = m_email.get(m_key)
+            m_listletteraction.subject = subject
 
         err_cnt = 0
         suc_cnt = 0
@@ -60,18 +76,10 @@ class SmtpSender:
                 m_email.__delitem__(m_key)
             m_email.__setitem__(m_key, email.utils.make_msgid('shove-it_listletter'))
 
-            send_mail = False
-            for group in groups:
-                for ugroup in email_trg.groups.all():
-                    if ugroup.id == group.id:
-                        send_mail = True
-            if send_mail == False:
-                continue
-
             m_key = 'To'
             if m_email.get(m_key) != None:
                 m_email.__delitem__(m_key)
-            my_to  = u'"%s"<%s>' % (email_trg.name, email_trg.address)
+            my_to  = u'%s<%s>' % (email_trg.name, email_trg.address)
             my_hdr = email.header.Header(my_to, 'iso-8859-1')
             m_email.__setitem__(m_key, my_hdr)
             

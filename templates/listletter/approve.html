@@ -8,7 +8,7 @@ Send mail
 {% block content %}
 
 {% ifequal action 'approve' %}
-<div class="notice">You have selected the following mail to be sent to the list:</div>
+<div class="notice">You have selected the following mail to be sent from sender {{ email_sender }} to the list:</div>
 
 <table>
 <tr>
@@ -87,18 +87,5 @@ id="approve_send_form">{% csrf_token %}
 
 <div class="notice">The delivery process took {{ seconds_elapsed }} seconds.</div>
 {% endifequal %}
-<!--
-<p>You have selected the following mail to be sent to the list:</p>
-<p>Subject {{ email.getSubject }}.</p>
-<p>Date {{ email.getDate }}</p>
-<form action="/listletter/sendmail/" method="post">
-{% for group in available_groups %}
-   <input type="checkbox" name="{{ group.name }}"/>
-   {{ group.name }}<br>
-{% endfor %}
-<input type="hidden" name="uid" value="{{ email.uid }}">
-<input type="submit" value="Sent" />
-</form>
--->
 
 {% endblock %}

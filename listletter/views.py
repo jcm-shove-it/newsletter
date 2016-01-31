@@ -264,7 +264,7 @@ def deletegroup(request, group_id):
                 'group':None,
                 'group_name':group.name,
                 'group_deleted': 'True',
-                'isContacts':isContacts,
+                'isContacts':True,
                 })
     except:
         pass
@@ -305,11 +305,12 @@ def sendmail(request, email_id):
     selected_email = email_id
     selected_groups = None
     available_groups = EmailTargetGroup.objects.filter(user__user__username=request.user.username)
-    email_target_list = EmailTarget.objects.filter(user__user__username=userName)
+
     mode = ''
     sup = InboxSupplier()
     sup.login(mail_host, listLetterSender.mailUsername, listLetterSender.mailPassword)
     m_email = sup.getEmail(int(email_id))
+    sup.logout()
 
     try:
         was_send = request.POST['_send']
@@ -322,9 +323,11 @@ def sendmail(request, email_id):
         sender  = SmtpSender()
         sender.login(mail_host, listLetterSender.mailUsername, listLetterSender.mailPassword)
         selected_groups = Helper.getGroups(request)
+        selected_email_targets = Helper.getUsersOfGroups(selected_groups, listLetterSender)
+
         mime_mail = Parser().parsestr(m_email.body)
         time1 = time.time()
-        lla = sender.sendMail(mime_mail, selected_groups, email_target_list, listLetterSender)
+        lla = sender.sendMail(mime_mail, selected_email_targets, listLetterSender)
         sender.logout()
         time2 = time.time()
         seconds_elapsed = (time2 - time1)
@@ -346,6 +349,7 @@ def sendmail(request, email_id):
             'available_groups':available_groups,
             'action':mode,
             'isMails':True,
+            'email_sender':listLetterSender.emailAddress,
             })
 
 
