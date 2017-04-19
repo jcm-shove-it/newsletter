@@ -47,7 +47,7 @@ class EmailTarget(models.Model):
     def __unicode__(self):
         return self.address
 
-    name    = models.CharField(max_length=128)
+    name    = models.CharField(max_length=256)
     address = models.CharField('email address', max_length=320)
     active  = models.BooleanField('non-active addresses will recieve no emails', default=True)
     created = models.DateTimeField('date created', default=datetime.now)
